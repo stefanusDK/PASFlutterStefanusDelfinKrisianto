@@ -1,70 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:pas_andorid_stefanus_d_k_34/components/custum_textfield_teks.dart';
-import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import '../components/custum_button.dart';
+import '../components/custum_textfield.dart';
+import '../components/custom_textfield_judul.dart';
+import '../components/custum_textfield_teks.dart';
+import '../controller/login_controller.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
 
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+  final controller = Get.put(LoginController());
 
-class _LoginPageState extends State<LoginPage> {
-  TextEditingController txtUsername = TextEditingController();
-  TextEditingController txtPassword = TextEditingController();
-  String statusLogin = "";
+  static const Color warnaUtama = Color(0xFFEE4D2D);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Login Page")),
-      body: Column(
-        children: [
-          // kita isi textfield username, password, dan button
-          Text(
-            "Welcome to Application " + statusLogin.toString(),
-            style: const TextStyle(
-              fontSize: 20,
-              color: Color.fromARGB(255, 62, 4, 223),
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: CustomTextField(txtcontroller: txtUsername, hintText: "Input username", inputFormatters: [FilteringTextInputFormatter.digitsOnly],),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: CustomTextField(txtcontroller: txtPassword, hintText: "Input password", obscureText: true, inputFormatters: [FilteringTextInputFormatter.digitsOnly],),
-          ),
-          Row(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  String username = txtUsername.text.toString();
-                  String password = txtPassword.text.toString();
-                  
-                  setState(() {
-                    if (username == "admin" && password == "admin") {
-                      print("sukses login");
-                      statusLogin = "admin";
-                    } else {
-                      print("gagal login");
-                      statusLogin = "failed";
-                    }
-                  });
-                },
-                child: const Text("Login"),
+              const Icon(Icons.restaurant_menu, size: 72, color: warnaUtama),
+              const SizedBox(height: 12),
+              const CustomTextfieldJudul(
+                text: 'Kuliner & Liga Inggris',
+                color: warnaUtama,
+                fontSize: 26,
               ),
-              const SizedBox(width: 10), // Tambahan spasi tipis biar tombol nggak dempetan
-              ElevatedButton(
-                onPressed: () {}, 
-                child: const Text("Register"),
+              const SizedBox(height: 4),
+              const CustomTextfieldTeks(
+                text: 'Silakan login untuk melanjutkan',
+                color: Colors.black54,
+              ),
+              const SizedBox(height: 32),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: CustomTextField(
+                  txtcontroller: controller.txtUsername,
+                  hintText: 'Username',
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: CustomTextField(
+                  txtcontroller: controller.txtPassword,
+                  hintText: 'Password',
+                  obscureText: true,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Obx(
+                () => controller.isLoading.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: CustomButton(
+                          text: 'Login',
+                          onPressed: controller.login,
+                        ),
+                      ),
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
